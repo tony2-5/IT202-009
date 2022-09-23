@@ -7,8 +7,20 @@ $a4 = ["-1", "2", "-3", "4", "-5", "5", "-6", "6", "-7", "7"];
 function bePositive($arr) {
     echo "<br>Processing Array:<br><pre>" . var_export($arr, true) . "</pre>";
     echo "<br>Positive output:<br>";
+    // UCID: ajd99 DATE: 09/22/2022
     //TODO use echo to output all of the values as positive (even if they were originally positive) 
+    foreach($arr as $num) {
+        if($num < 0) {
+            $num*=-1;
+            echo "$num ";
+        }
+        else {
+            echo "$num ";
+        }
+    }
     //hint: may want to use var_dump() to show final data types
+    echo "\n";
+    echo var_dump($arr);
 }
 echo "Problem 3: Be Positive<br>";
 ?>
