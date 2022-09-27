@@ -9,14 +9,17 @@ function bePositive($arr) {
     echo "<br>Positive output:<br>";
     // UCID: ajd99 DATE: 09/22/2022
     //TODO use echo to output all of the values as positive (even if they were originally positive) 
-    for($i = 0; $i<count($arr)-1;$i++) {
+    for($i = 0; $i<count($arr);$i++) {
         if($arr[$i] < 0) {
+            $wasString = is_string($arr[$i]);
             $arr[$i]*=-1;
-            echo $arr[$i];
-            $arr[$i] = (string) $arr[$i];
+            echo "$arr[$i] ";
+            if($wasString) {
+                $arr[$i] = (string) $arr[$i];
+            }
         }
         else {
-            echo $arr[$i];
+            echo "$arr[$i] ";
         }
     }
     //hint: may want to use var_dump() to show final data types
