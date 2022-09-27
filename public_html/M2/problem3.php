@@ -13,6 +13,7 @@ function bePositive($arr) {
         if($arr[$i] < 0) {
             $arr[$i]*=-1;
             echo $arr[$i];
+            $arr[$i] = (string) $arr[$i];
         }
         else {
             echo $arr[$i];
