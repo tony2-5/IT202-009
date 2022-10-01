@@ -13,13 +13,38 @@
             setTimeout(() => {
                 //added this delay here as some solutions may require it to update properly (i.e., click code may complete before the navigation changes)
                 //TODO: add code for processing the current selection 
-
                 //Note: likely you'll want to call updateCurrentPage towards the end
             }, 100);
         }
     </script>
     <style>
         /* TODO: make edits here */
+        nav {
+            background-color: rgb(112, 225, 116); /*3. changing nav background color */
+        }
+        nav > ul > li {
+            display:inline-block; /* 1. inline display type will put all the bullets in one line
+                                     2. changing display from list-item to inline will get rid of bullet points           
+                                    */
+        }
+        a:hover { /* 4. on hover links change style*/
+            color: black;
+            border: 1px solid black;
+            border-radius: 20%;
+        }
+        /* 5. using specifiers to get to every list element under body paragraph*/
+        h3 + ul > li > ul > li, h3 + ul > li  {
+            list-style-type: none; /*removes old bullet type*/
+        }
+        h3 + ul > li > ul > li:before, h3 + ul > li:before {
+            content: "✓"; /*adds text before each list element with checkmark*/
+        }
+        h1, a {
+            text-transform: capitalize; /*6. capatalizes first letter of h1 and a tags*/
+        }
+        body { /*7. personal website customization*/
+            background: radial-gradient(circle, rgba(63,251,181,0.24555759803921573) 0%, rgba(70,124,252,0.6237088585434174) 100%);
+        }
     </style>
     <!-- make the necessary edits above this line -->
 
