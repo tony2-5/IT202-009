@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Problem 1</title>
+    <meta charset="utf-8" />
+    <script>
+        window.addEventListener("load", () => {
+            console.log("loaded via javascript");
+            //TODO: add any extra onload processing you may need here
+            const liElements = document.querySelectorAll("li");
+            liElements[0].addEventListener("click",getCurrentSelection);
+            liElements[1].addEventListener("click",getCurrentSelection);
+            liElements[2].addEventListener("click",getCurrentSelection);
+            liElements[3].addEventListener("click",getCurrentSelection);
+        });
+        function getCurrentSelection(event) {
+            setTimeout(() => {
+                //added this delay here as some solutions may require it to update properly (i.e., click code may complete before the navigation changes)
+                //TODO: add code for processing the current selection
+                //Note: likely you'll want to call updateCurrentPage towards the end
+                updateCurrentPage(event.target.textContent);
+            }, 100);
+        }
+    </script>
+    <style>
+        /* TODO: make edits here */
+        nav {
+            background-color: rgb(112, 225, 116); /*3. changing nav background color */
+        }
+        nav > ul > li {
+            display:inline-block; /* 1. inline display type will put all the bullets in one line
+                                     2. changing display from list-item to inline will get rid of bullet points           
+                                    */
+        }
+        a:hover { /* 4. on hover links change style*/
+            color: black;
+            border: 1px solid black;
+            border-radius: 20%;
+        }
+        /* 5. using specifiers to get to every list element under body paragraph*/
+        h3 + ul > li > ul > li, h3 + ul > li  {
+            list-style-type: none; /*removes old bullet type*/
+        }
+        h3 + ul > li > ul > li:before, h3 + ul > li:before {
+            content: "✓"; /*adds text before each list element with checkmark*/
+        }
+        h1, a {
+            text-transform: capitalize; /*6. capatalizes first letter of h1 and a tags*/
+        }
+        body { /*7. personal website customization*/
+            background: radial-gradient(circle, rgba(63,251,181,0.24555759803921573) 0%, rgba(70,124,252,0.6237088585434174) 100%);
+        }
+    </style>
+    <!-- make the necessary edits above this line -->
+
+
+    <!-- Do not edit anything below this line, doing so will lose points-->
+    <script src="https://it202-spring-22.herokuapp.com/M3/problem1.js">
+            //Don't edit anything in this tag and do not delete it
+    </script>
+</head>
+<!-- Do not edit anything below this line, doing so will lose points-->
+
+<body onload="check();updateCurrentPage('start');">
+    <header>
+        <h2>Problem 1</h2>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#login">login</a></li>
+            <li><a href="#register">register</a></li>
+            <li><a href="#profile">profile</a></li>
+            <li><a href="#logout">logout</a></li>
+        </ul>
+    </nav>
+    <h1></h1>
+    <h3>Challenges</h3>
+    <ul>
+        <li>Edit the given <code>&lt;style&gt;</code> tag to customize the appearance of this page
+            <ul>
+                <li>(1 pt) Make the navigation horizontal</li>
+                <li>(1 pt) Get rid of the navigation list item markers</li>
+                <li>(1 pt) Give the navigation a background</li>
+                <li>(1 pt) Make the links (or their surrounding area) change color on mouseover</li>
+                <li>(1 pt) Change the "bullet points" of this entire list to checkmarks (✓)</li>
+                <li>(1 pt) Use CSS to uppercase the first character of the content in the <code>&lt;h1&gt;</code> tag
+                    and the
+                    <code>&lt;a&gt;</code> tags
+                </li>
+                <li>(1 pt) Add some styling of your choice (that doesn't conflict with any requests in this assignment),
+                    this will be mentioned in the submission</li>
+            </ul>
+        </li>
+        <li>(1 pt) Any style applied to unordered list in the <code>&lt;nav&gt;</code> tag should not apply to this list
+            (i.e., nav
+            and this
+            list should
+            not appear identical)</li>
+        <li>
+            Any time a navigation link is clicked have it do the following:
+            <ul>
+                <li>(1 pt) Update the content of the <code>&lt;h1&gt;</code> tag with the link text</li>
+                <li>(1 pt) Update the content of the <code>&lt;title&gt;</code> tag with the link text</li>
+                <li>Hint: Get the word of the current navigation and pass it to updateCurrentPage()</li>
+            </ul>
+        </li>
+    </ul>
+    <footer></footer>
+</body>
+
+</html>
