@@ -35,9 +35,15 @@ if (isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["confirm
         echo "Email must not be empty";
         $hasError = true;
     }
-    //sanitize
+    /*//sanitize
     $email = filter_var($email, FILTER_SANITIZE_EMAIL);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "Invalid email";
+        $hasError = true;
+    }
+    */
+    $email = sanitize_email($email);
+    if(!is_valid_email($email)) {
         echo "Invalid email";
         $hasError = true;
     }
