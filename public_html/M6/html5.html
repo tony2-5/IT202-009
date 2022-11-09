@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    
+</head>
+<body style="display: flex; justify-content: center;">
+    <canvas id="canvas" height="700" width="700"tabindex="1"> </canvas>
+    <script>
+
+
+        // Collect The Square game
+        
+        // Get a reference to the canvas DOM element
+        var canvas = document.getElementById('canvas');
+
+        canvas.style.height="80vh";
+        canvas.style.width="60vw";
+        
+
+        // Get the canvas drawing context
+        var context = canvas.getContext('2d');
+        
+        // Your score
+        var score = 0;
+        
+        // Properties for your square
+        var x = 50; // X position
+        var y = 100; // Y position
+        var speed = 6; // Distance to move each frame
+        var sideLength = 50; // Length of each side of the square
+        
+        // FLags to track which keys are pressed
+        var down = false;
+        var up = false;
+        var right = false;
+        var left = false;
+        
+        // Properties for the target square
+        var targetX = 0;
+        var targetY = 0;
+        var targetLength = 25;
+
+        // Timer power up square properties
+        //UCID: ajd99
+        //Date: 11/09/2022
+        var timerX = 0;
+        var timerY = 0;
+        var pointsSinceLastTimeBonus = 0
+        var recentlyCollected = false;
+        moveTimer();
+
+        // Instantiate obstacles array
+        //UCID: ajd99
+        //Date: 11/09/2022
+        var obstacles = [];
+        var permX;
+        var permY;
+        
+        // Determine if number a is within the range b to c (exclusive)
+        function isWithin(a, b, c) {
+          return (a > b && a < c);
+        }
+        
+        // Countdown timer (in seconds)
+        var countdown = 30;
+        // ID to track the setTimeout
+        var id = null;
+        
+        // Listen for keydown events
+        canvas.addEventListener('keydown', function(event) {
+          event.preventDefault();
+          console.log(event.key, event.keyCode);
+          if (event.keyCode === 40) { // DOWN
+            down = true;
+          }
+          if (event.keyCode === 38) { // UP
+            up = true;
+          }
+          if (event.keyCode === 37) { // LEFT
+            left = true;
+          }
+          if (event.keyCode === 39) { // RIGHT
+            right = true;
+          }
+        });
+        
+        // Listen for keyup events
+        canvas.addEventListener('keyup', function(event) {
+          event.preventDefault();
+          console.log(event.key, event.keyCode);
+          if (event.keyCode === 40) { // DOWN
+            down = false;
+          }
+          if (event.keyCode === 38) { // UP
+            up = false;
+          }
+          if (event.keyCode === 37) { // LEFT
+            left = false;
+          }
+          if (event.keyCode === 39) { // RIGHT
+            right = false;
+          }
+        });
+        
+        // Show the start menu
+        function menu() {
+          erase();
+          context.fillStyle = '#000000';
+          context.font = '36px Arial';
+          context.textAlign = 'center';
+          context.fillText('Collect the Square!', canvas.width / 2, canvas.height / 4);
+          context.font = '24px Arial';
+          context.fillText('Click to Start', canvas.width / 2, canvas.height / 2);
+          context.font = '18px Arial'
+          context.fillText('Use the arrow keys to move', canvas.width / 2, (canvas.height / 4) * 3);
+          // Start the game on a click
+          canvas.addEventListener('click', startGame);
+        }
+        
+        // Start the game
+        function startGame() {
+            // Reduce the countdown timer ever second
+          id = setInterval(function() {
+            countdown--;
+          }, 1000)
+          // Stop listening for click events
+          canvas.removeEventListener('click', startGame);
+          // Put the target at a random starting point
+            moveTarget();
+          // Kick off the draw loop
+          draw();
+        }
+        
+        // Show the game over screen
+        function endGame() {
+            // Stop the countdown
+          clearInterval(id);
+          // Display the final score
+          erase();
+          context.fillStyle = '#000000';
+          context.font = '24px Arial';
+          context.textAlign = 'center';
+          context.fillText('Final Score: ' + score, canvas.width / 2, canvas.height / 2);
+        }
+        
+        // Move the target square to a random position
+        function moveTarget() {
+          targetX = Math.round(Math.random() * canvas.width - targetLength);
+          targetY = Math.round(Math.random() * canvas.height - targetLength);
+        }
+        
+        //Move timer power up
+        //UCID: ajd99
+        //Date: 11/09/2022
+        function moveTimer() {
+          timerX = Math.round(Math.random() * canvas.width - targetLength);
+          timerY = Math.round(Math.random() * canvas.height - targetLength);
+        }
+        // Clear the canvas
+        function erase() {
+          context.fillStyle = '#FFFFFF';
+          context.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        //Adds obstacle to canvas after collection
+        //UCID: ajd99
+        //Date: 11/09/2022
+        function addObstacle(permX,permY) {
+            let obstacle = {
+                "x": permX,
+                "y": permY
+            };
+            obstacles.push(obstacle);
+        }
+        function drawObstacle() {
+             // draw all the obstacles
+          if(obstacles.length>0) {
+            // this if statement fixes bug of first collected square not appearing as obstacle
+            context.fillStyle = '#0000FF';
+            context.fillRect(permX,permY,targetLength,targetLength);
+          }
+          // loops through each obstacle in obstacles array and draws it
+          obstacles.forEach(function(ele) {
+            context.fillStyle = '#0000FF';
+            context.fillRect(ele.x,ele.y,targetLength,targetLength);
+          });
+        }
+        // moved collision detection into function
+        //UCID: ajd99
+        //Date: 11/09/2022
+        function targetCollision() {
+          if (isWithin(targetX, x, x + sideLength) || isWithin(targetX + targetLength, x, x + sideLength)) { // X
+            if (isWithin(targetY, y, y + sideLength) || isWithin(targetY + targetLength, y, y + sideLength)) { // Y
+              if(obstacles.length === 0) {
+                permX = targetX;
+                permY = targetY;
+              }
+              // have delay in spawning of power up (takes three game points to spawn a new time power up)
+              if(recentlyCollected==true) {
+                pointsSinceLastTimeBonus++;
+                if(pointsSinceLastTimeBonus == 4) {
+                  pointsSinceLastTimeBonus = 0;
+                  recentlyCollected=false;
+                }
+              }
+              // Respawn the target
+              moveTarget();
+              // Increase the score
+              score++;
+              // add obstacle to array
+              addObstacle(targetX,targetY)
+            }
+          }
+        }
+        //UCID: ajd99
+        //Date: 11/09/2022
+        function timerCollision() {
+          if (isWithin(timerX, x, x + sideLength) || isWithin(timerX + targetLength, x, x + sideLength)) { // X
+            if (isWithin(timerY, y, y + sideLength) || isWithin(timerY + targetLength, y, y + sideLength)) { // Y 
+              // for delaying of spawning next timer power up
+              recentlyCollected=true;
+              moveTimer();
+              // add to countdown
+              countdown += 3;
+            }
+          }
+        }
+
+        // The main draw loop
+        function draw() {
+          erase();
+          // Move the square
+          if (down) {
+            y += speed;
+          }
+          if (up) {
+            y -= speed;
+          }
+          if (right) {
+            x += speed;
+          }
+          if (left) {
+            x -= speed;
+          }
+          // Keep the square within the bounds
+          if (y + sideLength > canvas.height) {
+            y = canvas.height - sideLength;
+          }
+          if (y < 0) {
+            y = 0;
+          }
+          if (x < 0) {
+            x = 0;
+          }
+          if (x + sideLength > canvas.width) {
+            x = canvas.width - sideLength;
+          }
+          //UCID: ajd99
+          //Date: 11/09/2022
+          // Collide with the target
+          targetCollision();
+          // Collide with timer power up
+          timerCollision();
+          //Draw obstacles
+          drawObstacle();
+          // Draw timer powerup
+          if(recentlyCollected===true) {
+            // move timer power up off screen until recently collected is false
+            context.fillStyle = '#FFFF00';
+            context.fillRect(1500, 1500, targetLength, targetLength);
+          }
+          else{
+            context.fillStyle = '#FFFF00';
+            context.fillRect(timerX, timerY, targetLength, targetLength);
+          }
+          // Draw the square
+          context.fillStyle = '#FF0000';
+          context.fillRect(x, y, sideLength, sideLength);
+          // Draw the target
+          context.fillStyle = '#00FF00';
+          context.fillRect(targetX, targetY, targetLength, targetLength);
+        
+          // Draw the score and time remaining
+          context.fillStyle = '#000000';
+          context.font = '24px Arial';
+          context.textAlign = 'left';
+          context.fillText('Score: ' + score, 10, 24);
+          context.fillText('Time Remaining: ' + countdown, 10, 50);
+          // End the game or keep playing
+          if (countdown <= 0) {
+            endGame();
+          } else {
+            window.requestAnimationFrame(draw);
+          }
+        }
+        
+        // Start the game
+        menu();
+        canvas.focus();
+        </script>
+</body>
+</html>
