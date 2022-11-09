@@ -45,6 +45,8 @@
         var targetLength = 25;
 
         // Timer power up square properties
+        //UCID: ajd99
+        //Date: 11/09/2022
         var timerX = 0;
         var timerY = 0;
         var pointsSinceLastTimeBonus = 0
@@ -52,6 +54,8 @@
         moveTimer();
 
         // Instantiate obstacles array
+        //UCID: ajd99
+        //Date: 11/09/2022
         var obstacles = [];
         var permX;
         var permY;
@@ -150,6 +154,8 @@
         }
         
         //Move timer power up
+        //UCID: ajd99
+        //Date: 11/09/2022
         function moveTimer() {
           timerX = Math.round(Math.random() * canvas.width - targetLength);
           timerY = Math.round(Math.random() * canvas.height - targetLength);
@@ -161,6 +167,8 @@
         }
 
         //Adds obstacle to canvas after collection
+        //UCID: ajd99
+        //Date: 11/09/2022
         function addObstacle(permX,permY) {
             let obstacle = {
                 "x": permX,
@@ -182,6 +190,8 @@
           });
         }
         // moved collision detection into function
+        //UCID: ajd99
+        //Date: 11/09/2022
         function targetCollision() {
           if (isWithin(targetX, x, x + sideLength) || isWithin(targetX + targetLength, x, x + sideLength)) { // X
             if (isWithin(targetY, y, y + sideLength) || isWithin(targetY + targetLength, y, y + sideLength)) { // Y
@@ -206,7 +216,8 @@
             }
           }
         }
-
+        //UCID: ajd99
+        //Date: 11/09/2022
         function timerCollision() {
           if (isWithin(timerX, x, x + sideLength) || isWithin(timerX + targetLength, x, x + sideLength)) { // X
             if (isWithin(timerY, y, y + sideLength) || isWithin(timerY + targetLength, y, y + sideLength)) { // Y 
@@ -248,6 +259,8 @@
           if (x + sideLength > canvas.width) {
             x = canvas.width - sideLength;
           }
+          //UCID: ajd99
+          //Date: 11/09/2022
           // Collide with the target
           targetCollision();
           // Collide with timer power up
