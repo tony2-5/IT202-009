@@ -23,7 +23,58 @@ reset_session();
 </form>
 <script>
     function validate(form) {
-       
+Feat-UserLoginEnhancement
+        //TODO 1: implement JavaScript validation
+        //ensure it returns false for an error and true for success
+
+        let pw = form.newPassword.value;
+        let con = form.confirmPassword.value;
+        //TODO add other client side validation....
+        let user = document.getElementById("username");
+        let email = document.getElementById("email");
+        let userNameRegex = /^[a-z0-9_-]{3,16}$/;
+        // allows any number of characters greater than one until @ then until . then after .
+        let emailRegex = /^.+\@.+\..+$/;
+        let hasError = false;
+        if(userNameRegex.test(user.value)) {
+            hasError = false;
+        }
+        else {
+            flash("Invalid username");
+            hasError = true;
+        }
+        if(emailRegex.test(email.value) && hasError==false) {
+            hasError = false;
+        }
+        else {
+            flash("Invalid email");
+            hasError = true;
+        }
+        if(pw.length<8 && hasError==false) {
+            flash("Password length less than 8 characters");
+            hasError = true;
+        }
+        //example of using flash via javascript
+        //find the flash container, create a new element, appendChild
+        if (pw !== con && hasError==false) {
+            //find the container
+            let flash = document.getElementById("flash");
+            //create a div (or whatever wrapper we want)
+            let outerDiv = document.createElement("div");
+            outerDiv.className = "row justify-content-center";
+            let innerDiv = document.createElement("div");
+
+            //apply the CSS (these are bootstrap classes which we'll learn later)
+            innerDiv.className = "alert alert-warning";
+            //set the content
+            innerDiv.innerText = "Password and Confirm password must match";
+
+            outerDiv.appendChild(innerDiv);
+            //add the element to the DOM (if we don't it merely exists in memory)
+            flash.appendChild(outerDiv);
+            hasError = true;
+        }
+        return (!hasError);
     }
 </script>
 <?php

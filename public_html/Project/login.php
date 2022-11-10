@@ -14,7 +14,32 @@ require(__DIR__ . "/../../partials/nav.php");
 </form>
 <script>
     function validate(form) {
-        
+        //TODO 1: implement JavaScript validation
+        //ensure it returns false for an error and true for success
+        let userOrEmail = document.getElementById("userOrEmail");
+        let password = document.getElementById("pw");
+        let userNameRegex = /^[a-z0-9_-]{3,16}$/;
+        // allows any number of characters greater than one until @ then until . then after .
+        let emailRegex = /^.+\@.+\..+$/;
+        let hasError = false;
+        if(userNameRegex.test(userOrEmail.value)) {
+            hasError = false;
+        }
+        else if(emailRegex.test(userOrEmail.value)) {
+            hasError = false;
+        }
+        else {
+            flash("Invalid email or username");
+            hasError = true;
+        }
+        if(password.value.length<8 && hasError==false) {
+            flash("Password length less than 8 characters");
+            hasError = true;
+        }
+        return (!hasError);
+        //TODO update clientside validation to check if it should
+        //valid email or username
+
     }
 </script>
 <?php
