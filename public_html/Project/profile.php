@@ -107,7 +107,25 @@ $username = get_username();
         let con = form.confirmPassword.value;
         let isValid = true;
         //TODO add other client side validation....
-
+        let user = document.getElementById("userOrEmail");
+        let password = document.getElementById("pw");
+        let userNameRegex = /^[a-z0-9_-]{3,16}$/;
+        // allows any number of characters greater than one until @ then until . then after .
+        let emailRegex = /^.+\@.+\..+$/;
+        let hasError = false;
+        if(userNameRegex.test(userOrEmail.value)) {
+            hasError = false;
+        }
+        else if(emailRegex.test(userOrEmail.value)) {
+            hasError = false;
+        }
+        else {
+            hasError = true;
+        }
+        if(password.value.length<8) {
+            hasError = false;
+        }
+        return hasError;
         //example of using flash via javascript
         //find the flash container, create a new element, appendChild
         if (pw !== con) {

@@ -17,6 +17,7 @@ require(__DIR__ . "/../../partials/nav.php");
         //TODO 1: implement JavaScript validation
         //ensure it returns false for an error and true for success
         let userOrEmail = document.getElementById("userOrEmail");
+        let password = document.getElementById("pw");
         let userNameRegex = /^[a-z0-9_-]{3,16}$/;
         // allows any number of characters greater than one until @ then until . then after .
         let emailRegex = /^.+\@.+\..+$/;
@@ -29,6 +30,9 @@ require(__DIR__ . "/../../partials/nav.php");
         }
         else {
             hasError = true;
+        }
+        if(password.value.length<8) {
+            hasError = false;
         }
         return hasError;
         //TODO update clientside validation to check if it should
