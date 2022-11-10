@@ -39,6 +39,7 @@ require(__DIR__ . "/../../partials/nav.php");
         return (!hasError);
         //TODO update clientside validation to check if it should
         //valid email or username
+
     }
 </script>
 <?php
