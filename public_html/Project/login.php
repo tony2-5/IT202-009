@@ -20,15 +20,17 @@ require(__DIR__ . "/../../partials/nav.php");
         let userNameRegex = /^[a-z0-9_-]{3,16}$/;
         // allows any number of characters greater than one until @ then until . then after .
         let emailRegex = /^.+\@.+\..+$/;
+        let hasError = false;
         if(userNameRegex.test(userOrEmail.value)) {
-            return true;
+            hasError = false;
         }
         else if(emailRegex.test(userOrEmail.value)) {
-            return true;
+            hasError = false;
         }
         else {
-            return false;
+            hasError = true;
         }
+        return hasError;
         //TODO update clientside validation to check if it should
         //valid email or username
     }
