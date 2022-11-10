@@ -107,10 +107,34 @@ $username = get_username();
         let con = form.confirmPassword.value;
         let isValid = true;
         //TODO add other client side validation....
-
+        let user = document.getElementById("username");
+        let email = document.getElementById("email");
+        let newPassword = document.getElementById("np");
+        let userNameRegex = /^[a-z0-9_-]{3,16}$/;
+        // allows any number of characters greater than one until @ then until . then after .
+        let emailRegex = /^.+\@.+\..+$/;
+        let hasError = false;
+        if(userNameRegex.test(user.value)) {
+            hasError = false;
+        }
+        else {
+            flash("Invalid username");
+            hasError = true;
+        }
+        if(emailRegex.test(email.value) && hasError==false) {
+            hasError = false;
+        }
+        else {
+            flash("Invalid email");
+            hasError = true;
+        }
+        if(newPassword.value.length<8  && hasError==false) {
+            flash("New password length less than 8 characters");
+            hasError = true;
+        }
         //example of using flash via javascript
         //find the flash container, create a new element, appendChild
-        if (pw !== con) {
+        if (pw !== con  && hasError==false) {
             //find the container
             let flash = document.getElementById("flash");
             //create a div (or whatever wrapper we want)
@@ -126,9 +150,9 @@ $username = get_username();
             outerDiv.appendChild(innerDiv);
             //add the element to the DOM (if we don't it merely exists in memory)
             flash.appendChild(outerDiv);
-            isValid = false;
+            hasError = true;
         }
-        return isValid;
+        return (!hasError);
     }
 </script>
 <?php
