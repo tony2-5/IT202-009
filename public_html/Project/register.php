@@ -13,11 +13,11 @@ reset_session();
     </div>
     <div>
         <label for="pw">Password</label>
-        <input type="password" id="pw" name="password" required minlength="8" />
+        <input type="password" id="pw" name="password" required />
     </div>
     <div>
         <label for="confirm">Confirm</label>
-        <input type="password" name="confirm" required minlength="8" />
+        <input type="password" name="confirm" required />
     </div>
     <input type="submit" value="Register" />
 </form>
@@ -25,6 +25,11 @@ reset_session();
     function validate(form) {
         //TODO 1: implement JavaScript validation
         //ensure it returns false for an error and true for success
+
+        // added to remove previous error messages on screen if trying to submit form again
+        while(document.getElementById("flash").firstChild) {
+            document.getElementById("flash").removeChild(document.getElementById("flash").firstChild);
+        }
         
         let pw = form.password.value;
         let con = form.confirm.value;
@@ -39,18 +44,18 @@ reset_session();
             hasError = false;
         }
         else {
-            flash("Invalid username");
+            flash("Invalid username", "warning");
             hasError = true;
         }
         if(emailRegex.test(email.value) && hasError==false) {
             hasError = false;
         }
         if(!emailRegex.test(email.value)) {
-            flash("Invalid email");
+            flash("Invalid email", "warning");
             hasError = true;
         }
         if(pw.length<8) {
-            flash("Password length less than 8 characters");
+            flash("Password length less than 8 characters","warning");
             hasError = true;
         }
         //example of using flash via javascript

@@ -8,12 +8,18 @@ require(__DIR__ . "/../../partials/nav.php");
     </div>
     <div>
         <label for="pw">Password</label>
-        <input type="password" id="pw" name="password" required minlength="8" />
+        <input type="password" id="pw" name="password" required  />
     </div>
     <input type="submit" value="Login" />
 </form>
 <script>
     function validate(form) {
+
+        // added to remove previous error messages on screen if trying to submit form again
+        while(document.getElementById("flash").firstChild) {
+            document.getElementById("flash").removeChild(document.getElementById("flash").firstChild);
+        }
+
         //TODO 1: implement JavaScript validation
         //ensure it returns false for an error and true for success
         let userOrEmail = document.getElementById("userOrEmail");
@@ -29,11 +35,11 @@ require(__DIR__ . "/../../partials/nav.php");
             hasError = false;
         }
         else {
-            flash("Invalid email or username");
+            flash("Invalid email or username","warning");
             hasError = true;
         }
         if(password.value.length<8) {
-            flash("Password length less than 8 characters");
+            flash("Password length less than 8 characters","warning");
             hasError = true;
         }
         return (!hasError);

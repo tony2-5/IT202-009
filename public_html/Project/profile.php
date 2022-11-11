@@ -103,6 +103,12 @@ $username = get_username();
 
 <script>
     function validate(form) {
+
+        // added to remove previous error messages on screen if trying to submit form again
+        while(document.getElementById("flash").firstChild) {
+            document.getElementById("flash").removeChild(document.getElementById("flash").firstChild);
+        }
+
         let pw = form.newPassword.value;
         let con = form.confirmPassword.value;
         let isValid = true;
@@ -118,18 +124,18 @@ $username = get_username();
             hasError = false;
         }
         else {
-            flash("Invalid username");
+            flash("Invalid username","warning");
             hasError = true;
         }
         if(emailRegex.test(email.value) && hasError==false) {
             hasError = false;
         }
         if(!emailRegex.test(email.value)) {
-            flash("Invalid email");
+            flash("Invalid email","warning");
             hasError = true;
         }
         if(newPassword.value.length<8) {
-            flash("New password length less than 8 characters");
+            flash("New password length less than 8 characters","warning");
             hasError = true;
         }
         //example of using flash via javascript
