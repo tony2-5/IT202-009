@@ -5,11 +5,11 @@ reset_session();
 <form onsubmit="return validate(this)" method="POST">
     <div>
         <label for="email">Email</label>
-        <input type="email" name="email" required />
+        <input type="text" name="email" id="email" required />
     </div>
     <div>
         <label for="username">Username</label>
-        <input type="text" name="username" required maxlength="30" />
+        <input type="text" name="username" id=username required maxlength="30" />
     </div>
     <div>
         <label for="pw">Password</label>
@@ -23,12 +23,11 @@ reset_session();
 </form>
 <script>
     function validate(form) {
-Feat-UserLoginEnhancement
         //TODO 1: implement JavaScript validation
         //ensure it returns false for an error and true for success
-
-        let pw = form.newPassword.value;
-        let con = form.confirmPassword.value;
+        
+        let pw = form.password.value;
+        let con = form.confirm.value;
         //TODO add other client side validation....
         let user = document.getElementById("username");
         let email = document.getElementById("email");
@@ -46,17 +45,17 @@ Feat-UserLoginEnhancement
         if(emailRegex.test(email.value) && hasError==false) {
             hasError = false;
         }
-        else {
+        if(!emailRegex.test(email.value)) {
             flash("Invalid email");
             hasError = true;
         }
-        if(pw.length<8 && hasError==false) {
+        if(pw.length<8) {
             flash("Password length less than 8 characters");
             hasError = true;
         }
         //example of using flash via javascript
         //find the flash container, create a new element, appendChild
-        if (pw !== con && hasError==false) {
+        if (pw !== con) {
             //find the container
             let flash = document.getElementById("flash");
             //create a div (or whatever wrapper we want)

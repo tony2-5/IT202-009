@@ -32,7 +32,7 @@ require(__DIR__ . "/../../partials/nav.php");
             flash("Invalid email or username");
             hasError = true;
         }
-        if(password.value.length<8 && hasError==false) {
+        if(password.value.length<8) {
             flash("Password length less than 8 characters");
             hasError = true;
         }

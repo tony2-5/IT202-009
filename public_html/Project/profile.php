@@ -124,17 +124,17 @@ $username = get_username();
         if(emailRegex.test(email.value) && hasError==false) {
             hasError = false;
         }
-        else {
+        if(!emailRegex.test(email.value)) {
             flash("Invalid email");
             hasError = true;
         }
-        if(newPassword.value.length<8  && hasError==false) {
+        if(newPassword.value.length<8) {
             flash("New password length less than 8 characters");
             hasError = true;
         }
         //example of using flash via javascript
         //find the flash container, create a new element, appendChild
-        if (pw !== con  && hasError==false) {
+        if (pw !== con) {
             //find the container
             let flash = document.getElementById("flash");
             //create a div (or whatever wrapper we want)
