@@ -109,6 +109,7 @@ $username = get_username();
             document.getElementById("flash").removeChild(document.getElementById("flash").firstChild);
         }
 
+        let cp = form.currentPassword.value;
         let pw = form.newPassword.value;
         let con = form.confirmPassword.value;
         let isValid = true;
@@ -134,7 +135,8 @@ $username = get_username();
             flash("Invalid email","warning");
             hasError = true;
         }
-        if(newPassword.value.length<8) {
+        // cp.length>0 to check if user is attempting to change password
+        if(cp.length>0 && newPassword.value.length<8) {
             flash("New password length less than 8 characters","warning");
             hasError = true;
         }
