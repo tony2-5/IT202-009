@@ -46,7 +46,7 @@ function map_column($col)
 ?>
 <div class="container-fluid">
     <h1>Edit Item</h1>
-    <form method="POST">
+    <form method="POST" novalidate>
         <?php foreach ($result as $column => $value) : ?>
             <?php /* Lazily ignoring fields via hardcoded array*/ ?>
             <?php if (!in_array($column, $ignore)) : ?>
@@ -63,10 +63,19 @@ function map_column($col)
                             <input class="form-check-input" id="<?php se($column); ?>" type="<?php echo map_column($column); ?>" value="1" name="<?php se($column); ?>"/>
                         <?php endif; ?>
                     <?php else : ?>
-                        <input class="form-control" id="<?php se($column); ?>" type="<?php echo map_column($column); ?>" value="<?php se($value); ?>" name="<?php se($column); ?>" />
+                        <?php if($column === "unit_price") : ?>
+                            <input class="form-control" id="<?php se($column); ?>" type="<?php echo map_column($column); ?>" value="<?php se($value/100); ?>" name="<?php se($column); ?>" />
+                        <?php else : ?>
+                            <input class="form-control" id="<?php se($column); ?>" type="<?php echo map_column($column); ?>" value="<?php se($value); ?>" name="<?php se($column); ?>" />
+                        <?php endif; ?>
                     <?php endif; ?> 
             <?php endif; ?>
         <?php endforeach; ?>
         <input class="btn btn-primary" type="submit" value="Update" name="submit" />
     </form>
+    <div class="mt-4">
+        <a href="list_items.php?">Return to list</a>
+    </div>
 </div>
+<?php
+require_once(__DIR__ . "/../../../partials/flash.php");

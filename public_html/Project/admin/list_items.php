@@ -22,6 +22,22 @@ if (isset($_POST["itemName"])) {
         flash("Error fetching records", "danger");
     }
 }
+// have full list shown by default
+else {
+    $results = [];
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM $TABLE_NAME LIMIT 50");
+    try {
+        $stmt->execute();
+        $r = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($r) {
+            $results = $r;
+        }
+    } catch (PDOException $e) {
+        error_log(var_export($e, true));
+        flash("Error fetching items", "danger");
+    }
+}
 ?>
 <div class="container-fluid">
     <h1>List Items</h1>
@@ -46,10 +62,12 @@ if (isset($_POST["itemName"])) {
                 <?php endif; ?>
                 <tr>
                     <?php foreach ($record as $column => $value) : ?>
-                        <td><?php se($value, null, "N/A"); ?></td>
+                        <?php if($column === "unit_price") : ?>
+                            <td>$<?php se(($value/100), null, "N/A"); ?></td>
+                        <?php else : ?>
+                            <td><?php se($value, null, "N/A"); ?></td>
+                        <?php endif; ?>
                     <?php endforeach; ?>
-
-
                     <td>
                         <a href="edit_item.php?id=<?php se($record, "id"); ?>">Edit</a>
                     </td>
@@ -58,3 +76,5 @@ if (isset($_POST["itemName"])) {
         </table>
     <?php endif; ?>
 </div>
+<?php
+require_once(__DIR__ . "/../../../partials/flash.php");
