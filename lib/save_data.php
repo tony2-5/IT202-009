@@ -15,6 +15,10 @@ function save_data($table, $data, $ignore = ["submit"])
 
     $params = [];
     foreach ($columns as $col) {
+        // multiply unit_price by 100, will divide to display
+        if($col == "unit_price") {
+            $data[$col]*=100;
+        }
         $params[":$col"] = $data[$col];
     }
     $stmt = $db->prepare($query);

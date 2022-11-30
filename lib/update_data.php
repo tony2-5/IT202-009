@@ -24,6 +24,9 @@ function update_data($table, $id,  $data, $ignore = ["id", "submit"])
 
     $params = [":id" => $id];
     foreach ($columns as $col) {
+        if($col == "unit_price") {
+            $data[$col]*=100;
+        }
         $params[":$col"] = se($data, $col, "", false);
     }
     $db = getDB();
