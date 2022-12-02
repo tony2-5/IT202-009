@@ -64,6 +64,12 @@ else {
                     <?php foreach ($record as $column => $value) : ?>
                         <?php if($column === "unit_price") : ?>
                             <td>$<?php se(($value/100), null, "N/A"); ?></td>
+                        <?php elseif($column === "visibility") : ?>
+                            <?php if($value==1) : ?>
+                                <td>True</td>
+                            <?php else : ?>
+                                <td>False</td>
+                            <?php endif; ?>
                         <?php else : ?>
                             <td><?php se($value, null, "N/A"); ?></td>
                         <?php endif; ?>
