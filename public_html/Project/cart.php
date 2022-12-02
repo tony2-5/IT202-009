@@ -31,7 +31,7 @@ if (!empty($action)) {
                 $breakVar = false;
                 foreach ($cart as $c) {
                     if($c["product_id"] == $_POST["item_id"]) {
-                        if($c["desired_quantity"] == $_POST["stock"]) {
+                        if($c["desired_quantity"] == $_POST["stock"] || $c["desired_quantity"] + $_POST["desired_quantity"] > $_POST["stock"]) {
                             flash("Desired quantity exceeds stock", "danger");
                             $breakVar = true;
                         }

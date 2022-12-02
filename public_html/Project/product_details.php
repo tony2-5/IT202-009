@@ -37,6 +37,9 @@ try {
                 </div>
             <?php endif; ?>
         <?php endforeach; ?>
+        <?php if (has_role("Admin")) : ?>
+            <a href="admin/edit_item.php?id=<?php se($_GET, "id", -1) ?>">Edit</a>
+        <?php endif; ?>
         <a href="shop.php">Return to shop</a>
 </div>
 <?php

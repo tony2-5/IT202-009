@@ -118,6 +118,9 @@ else {
                             <p class="card-text"> Cost: $<?php se($item, "unit_price"); ?> </p>
                             <?php /*redirect to product details*/?>
                             <a href="product_details.php?id=<?php se($item, "id"); ?>">Product Details</a>
+                            <?php if (has_role("Admin")) : ?>
+                                <a href="admin/edit_item.php?id=<?php se($item, "id"); ?>"><br>Edit</a>
+                            <?php endif; ?>
                         </div>
                         <div class="card-footer">
                             <form method="POST" action="cart.php">
