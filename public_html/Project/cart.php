@@ -70,8 +70,6 @@ if (!empty($action)) {
                 $stmt->execute();
                 flash("Updated item quantity", "success");
             } catch (PDOException $e) {
-                //TODO handle item removal when desired_quantity is <= 0
-                //TODO handle any other update related rules per your proposal
                 error_log(var_export($e, true));
                 flash("Error updating item quantity", "danger");
             }
@@ -85,8 +83,6 @@ if (!empty($action)) {
                 $stmt->execute();
                 flash("Removed item from cart", "success");
             } catch (PDOException $e) {
-                //TODO handle item removal when desired_quantity is <= 0
-                //TODO handle any other update related rules per your proposal
                 error_log(var_export($e, true));
                 flash("Error removing item", "danger");
             }
@@ -100,8 +96,6 @@ if (!empty($action)) {
                 $stmt->execute();
                 flash("Cleared cart", "success");
             } catch (PDOException $e) {
-                //TODO handle item removal when desired_quantity is <= 0
-                //TODO handle any other update related rules per your proposal
                 error_log(var_export($e, true));
                 flash("Failed to clear cart", "danger");
             }
