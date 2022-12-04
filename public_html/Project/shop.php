@@ -18,7 +18,8 @@ $TABLE_NAME = "Products";
      flash("Error fetching items", "danger");
  }
 
-
+//UCID:ajd99
+//12/03/2022
 $results = [];
 // if form submitted for name and category filter alternative select statement
 if (isset($_POST["itemName"])) {
@@ -27,24 +28,32 @@ if (isset($_POST["itemName"])) {
     if(isset($_POST["sort"]) && $_POST["sort"] === "asc") {
         // for additive filter, if someone does not want to use category filter
         if($_POST["category"] === "noFilter") {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME WHERE name like :name AND visibility=1 AND stock > 0 ORDER BY unit_price ASC LIMIT 10");
+            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
+            WHERE name like :name AND visibility=1 AND stock > 0 ORDER BY unit_price ASC LIMIT 10");
         } else {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME WHERE name like :name AND category like :category AND visibility=1 AND stock > 0 ORDER BY unit_price ASC LIMIT 10");
+            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
+            WHERE name like :name AND category like :category AND visibility=1 AND stock > 0 ORDER BY unit_price ASC LIMIT 10");
         }
     } else if(isset($_POST["sort"]) && $_POST["sort"] === "desc") {
         if($_POST["category"] === "noFilter") {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME WHERE name like :name AND visibility=1 AND stock > 0 ORDER BY unit_price DESC LIMIT 10");
+            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
+            WHERE name like :name AND visibility=1 AND stock > 0 ORDER BY unit_price DESC LIMIT 10");
         } else {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME WHERE name like :name AND category like :category AND visibility=1 AND stock > 0 ORDER BY unit_price DESC LIMIT 10");
+            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
+            WHERE name like :name AND category like :category AND visibility=1 AND stock > 0 ORDER BY unit_price DESC LIMIT 10");
         }
     }
     else {
         if($_POST["category"] === "noFilter") {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME WHERE name like :name AND visibility=1 AND stock > 0 LIMIT 10");
+            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
+            WHERE name like :name AND visibility=1 AND stock > 0 LIMIT 10");
         } else {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME WHERE name like :name AND category like :category AND visibility=1 AND stock > 0 LIMIT 10");
+            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
+            WHERE name like :name AND category like :category AND visibility=1 AND stock > 0 LIMIT 10");
         }
     }
+    //UCID:ajd99
+    //12/03/2022
     try {
         // for additive filter, if someone does not want to use category filter
         if($_POST["category"] === "noFilter") {
@@ -107,7 +116,6 @@ else {
         <h1>Shop Items</h1>
         <div class="row row-cols-sm-2 row-cols-xs-1 row-cols-md-3 row-cols-lg-6 g-4">
             <?php foreach ($results as $item) : ?>
-                <?php /* if statement checks visibility of each item and only displays items with visibility 1*/?>
                 <div class="col">
                     <div class="card bg-light">
                         <div class="card-header">

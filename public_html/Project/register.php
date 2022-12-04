@@ -110,7 +110,7 @@ if (isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["confirm
         $hasError = true;
     }
     if (!preg_match('/^[a-z0-9_-]{3,16}$/', $username)) {
-        flash("Username must only contain 3-30 characters a-z, 0-9, _, or -", "danger");
+        flash("Username must only contain 3-16 characters a-z, 0-9, _, or -", "danger");
         $hasError = true;
     }
     if (empty($password)) {
