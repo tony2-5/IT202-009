@@ -3,22 +3,41 @@ require(__DIR__ . "/../../partials/nav.php");
 
 is_logged_in(true);
 if(isset($_GET["id"])) {
-    // first query to select order table data, which gets the most recent order by a specific user using sort by DESC and limit 1
-    // Where user_id to make sure only getting data for correct logged in user
-    $query = "SELECT total_price, address, payment_method, money_recieved, first_name, last_name
-    FROM Orders WHERE id = :id AND user_id = :uid;";
-    $db = getDB();
-    $stmt = $db->prepare($query);
-    $order = [];
-    try {
-        $stmt->execute([":uid" => get_user_id(),":id" => $_GET["id"]]);
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if ($results) {
-            $order = $results;
+    // if has admin role get data about product do not need to make sure user id matches in where statement.
+    if(has_role("Admin")) {
+        $query = "SELECT total_price, address, payment_method, money_recieved, first_name, last_name
+        FROM Orders WHERE id = :id;";
+        $db = getDB();
+        $stmt = $db->prepare($query);
+        $order = [];
+        try {
+            $stmt->execute([":id" => $_GET["id"]]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($results) {
+                $order = $results;
+            }
+        } catch (PDOException $e) {
+            error_log(var_export($e, true));
+            flash("Error fetching order", "danger");
         }
-    } catch (PDOException $e) {
-        error_log(var_export($e, true));
-        flash("Error fetching order", "danger");
+    } else {
+        // first query to select order table data, which gets the most recent order by a specific user using sort by DESC and limit 1
+        // Where user_id to make sure only getting data for correct logged in user
+        $query = "SELECT total_price, address, payment_method, money_recieved, first_name, last_name
+        FROM Orders WHERE id = :id AND user_id = :uid;";
+        $db = getDB();
+        $stmt = $db->prepare($query);
+        $order = [];
+        try {
+            $stmt->execute([":uid" => get_user_id(),":id" => $_GET["id"]]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($results) {
+                $order = $results;
+            }
+        } catch (PDOException $e) {
+            error_log(var_export($e, true));
+            flash("Error fetching order", "danger");
+        }
     }
     // if previous query array empty means inccorect user attempting to view order confirmation data
     if(count($order)>0) {
