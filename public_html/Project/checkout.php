@@ -73,6 +73,9 @@ if (isset($_POST["purchase"])) {
     } else if ($total<se($_POST, "moneyRecieved", 0, false)*100){
         $hasError = true;
         flash("Amount you are paying of $" . $_POST["moneyRecieved"] . " exceeds current cart cost of $" . $total/100, "danger");
+    } else if($total==0) {
+        $hasError = true;
+        flash("Checkout is empty, no items to purchase");
     }
 
     $address = se($_POST, "address", "", false);
@@ -82,7 +85,7 @@ if (isset($_POST["purchase"])) {
     $country = se($_POST, "country", "", false);
     $zip = se($_POST, "zip", "", false);
     // concatenating address info for insert into database
-    $addressConcat = $address . $apartment . $city . $stateOrProv . $country .  $zip;
+    $addressConcat = $address ." ". $apartment ." ". $city ." ". $stateOrProv ." ". $country ." ". $zip;
 
     // if error prevents database query
     if (!$hasError) {
@@ -155,7 +158,7 @@ if (isset($_POST["purchase"])) {
             }
 
             
-            flash("Success in ordering item", "success");
+            header("Location: orderconfirmation.php");
         } catch (PDOException $e) {
             error_log(var_export($e, true));
             flash("Error ordering item", "danger");
