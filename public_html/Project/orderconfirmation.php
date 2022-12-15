@@ -2,47 +2,93 @@
 require(__DIR__ . "/../../partials/nav.php");
 
 is_logged_in(true);
-// first query to select order table data, which gets the most recent order by a specific user using sort by DESC and limit 1
-$query = "SELECT id, total_price, address, payment_method, money_recieved, first_name, last_name
-FROM Orders WHERE user_id = :uid ORDER BY created DESC LIMIT 1;";
-$db = getDB();
-$stmt = $db->prepare($query);
-$order = [];
-try {
-    $stmt->execute([":uid" => get_user_id()]);
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    if ($results) {
-        $order = $results;
+if(isset($_GET["id"])) {
+    // first query to select order table data, which gets the most recent order by a specific user using sort by DESC and limit 1
+    // Where user_id to make sure only getting data for correct logged in user
+    $query = "SELECT total_price, address, payment_method, money_recieved, first_name, last_name
+    FROM Orders WHERE id = :id AND user_id = :uid;";
+    $db = getDB();
+    $stmt = $db->prepare($query);
+    $order = [];
+    try {
+        $stmt->execute([":uid" => get_user_id(),":id" => $_GET["id"]]);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($results) {
+            $order = $results;
+        }
+    } catch (PDOException $e) {
+        error_log(var_export($e, true));
+        flash("Error fetching order", "danger");
     }
-} catch (PDOException $e) {
-    error_log(var_export($e, true));
-    flash("Error fetching order", "danger");
-}
+    // if previous query array empty means inccorect user attempting to view order confirmation data
+    if(count($order)>0) {
+        // second query selects product info about ordereditems from the OrderItems table where the order id matches the id from Order table
+        $query = "SELECT item.name, orderitem.quantity, orderitem.unit_price, (orderitem.unit_price * orderitem.quantity) as subtotal
+        FROM Products as item JOIN OrderItems as orderitem on item.id = orderitem.product_id 
+        WHERE order_id = :oid";
+        $db = getDB();
+        $stmt = $db->prepare($query);
+        $orderItems = [];
+        try {
+            $stmt->execute([":oid" => $_GET["id"]]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($results) {
+                $orderItems = $results;
+            }
+        } catch (PDOException $e) {
+            error_log(var_export($e, true));
+            flash("Error fetching order", "danger");
+        }
+    }  
+    else {
+        // so page will display nothing
+        $orderItems = [];
+    }
+} else {
+    // first query to select order table data, which gets the most recent order by a specific user using sort by DESC and limit 1
+    $query = "SELECT id, total_price, address, payment_method, money_recieved, first_name, last_name
+    FROM Orders WHERE user_id = :uid ORDER BY created DESC LIMIT 1;";
+    $db = getDB();
+    $stmt = $db->prepare($query);
+    $order = [];
+    try {
+        $stmt->execute([":uid" => get_user_id()]);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($results) {
+            $order = $results;
+        }
+    } catch (PDOException $e) {
+        error_log(var_export($e, true));
+        flash("Error fetching order", "danger");
+    }
 
-// second query selects product info about ordereditems from the OrderItems table where the order id matches the id from Order table
-$query = "SELECT item.name, orderitem.quantity, orderitem.unit_price, (orderitem.unit_price * orderitem.quantity) as subtotal
-FROM Products as item JOIN OrderItems as orderitem on item.id = orderitem.product_id 
-WHERE order_id = :oid";
-$db = getDB();
-$stmt = $db->prepare($query);
-$orderItems = [];
-try {
-    $stmt->execute([":oid" => $order[0]["id"]]);
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    if ($results) {
-        $orderItems = $results;
+    // second query selects product info about ordereditems from the OrderItems table where the order id matches the id from Order table
+    $query = "SELECT item.name, orderitem.quantity, orderitem.unit_price, (orderitem.unit_price * orderitem.quantity) as subtotal
+    FROM Products as item JOIN OrderItems as orderitem on item.id = orderitem.product_id 
+    WHERE order_id = :oid";
+    $db = getDB();
+    $stmt = $db->prepare($query);
+    $orderItems = [];
+    try {
+        $stmt->execute([":oid" => $order[0]["id"]]);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($results) {
+            $orderItems = $results;
+        }
+    } catch (PDOException $e) {
+        error_log(var_export($e, true));
+        flash("Error fetching order", "danger");
     }
-} catch (PDOException $e) {
-    error_log(var_export($e, true));
-    flash("Error fetching order", "danger");
 }
 ?>
-<div class="d-flex justify-content-center m-3">
-    <h1 class="border rounded-3 p-2" style="background-color:rgb(54, 207, 82);">Order successful, thank you for your purchase!</h1>
-</div>
+<?php if(!isset($_GET["id"])) :?>
+    <div class="d-flex justify-content-center m-3">
+        <h1 class="border rounded-3 p-2" style="background-color:rgb(54, 207, 82);">Order successful, thank you for your purchase!</h1>
+    </div>
+<?php endif; ?>
 <div class="container-fluid">
     <table class="table table-striped">
-        <h3> Ordered Items </h3>
+        <h3 class="mt-2"> Ordered Items </h3>
         <?php $total = 0; ?>
         <thead>
             <tr>
