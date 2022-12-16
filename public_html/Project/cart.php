@@ -3,6 +3,11 @@ require(__DIR__ . "/../../partials/nav.php");
 
 is_logged_in(true);
 
+if(isset($_GET['productPriceErrorName'])) {
+    // flash message if there was a price error in checkout.php that prints names of all products with price updates
+    flash("Product " . $_GET['productPriceErrorName'] . " price has been updated. Please review cart before ordering again.", "warning");
+}
+
 $action = strtolower(trim(se($_POST, "action","", false)));
 if (!empty($action)) {
     $db = getDB();
@@ -167,6 +172,7 @@ try {
         <?php endif; ?>
         <tr>
             <td>Total: $<?php se($total/100, null, 0); ?></td>
+            <td><button class="btn btn-success" onclick="location.href = '/Project/checkout.php';">Place order</button></td>
             <td colspan="100%">
                 <form method="POST">
                     <input type="hidden" name="action" value="clear" />
