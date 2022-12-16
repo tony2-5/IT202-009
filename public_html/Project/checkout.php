@@ -19,7 +19,10 @@ try {
     error_log(var_export($e, true));
     flash("Error fetching cart", "danger");
 }
-
+/*
+UCID: ajd99
+DATE: 12/16/2022
+*/
 // if order button is pressed
 if (isset($_POST["purchase"])) {
     $hasError=false;
@@ -47,10 +50,14 @@ if (isset($_POST["purchase"])) {
                 flash("Error updating product cost", "danger");
             }
         }
+        /*
+        UCID: ajd99
+        DATE: 12/16/2022
+        */
         // if hasError already true, means there was a price error
-        if($hasError) {
+        if($hasError && se($c, "unit_price","",false) != se($c, "item_unit_price","",false))  {
             // redirect to cart to see updated cart
-            header("Location: cart.php?productPriceErrorName=".$productPriceErrorNames);
+            die(header("Location: cart.php?productPriceErrorName=".$productPriceErrorNames));
         }
         // if desired quantity of product in cart is greater than flash error message and set hasError true
         if(se($c, "desired_quantity","",false) > se($c, "stock","",false)) {
@@ -208,6 +215,7 @@ if (isset($_POST["purchase"])) {
 <div class="container-fluid d-flex flex-column flex-fill align-items-center">
     <form onsubmit="return validate(this)" class="w-50" method="POST">
         <div class="d-flex justify-content-center mb-2">
+            <!--UCID: ajd99 DATE: 12/16/2022-->
             <div class="d-flex flex-column flex-fill">
                 <label class="form-label" for="paymentMethod">Chose payment method</label>
                 <select name="paymentMethod" id="paymentMethod" class="form-select" required>
@@ -277,6 +285,11 @@ if (isset($_POST["purchase"])) {
 </div>
 <script>
     function validate(form) {
+        /*
+        UCID: ajd99
+        DATE: 12/16/2022
+        */
+
         // added to remove previous error messages on screen if trying to submit form again
         while(document.getElementById("flash").firstChild) {
             document.getElementById("flash").removeChild(document.getElementById("flash").firstChild);
