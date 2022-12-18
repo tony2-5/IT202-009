@@ -57,7 +57,8 @@ if (isset($_POST["purchase"])) {
         // if hasError already true, means there was a price error
         if($hasError && se($c, "unit_price","",false) != se($c, "item_unit_price","",false))  {
             // redirect to cart to see updated cart
-            die(header("Location: cart.php?productPriceErrorName=".$productPriceErrorNames));
+            //die(header("Location: cart.php?productPriceErrorName=".$productPriceErrorNames));
+            redirect("cart.php?productPriceErrorName=".$productPriceErrorNames);
         }
         // if desired quantity of product in cart is greater than flash error message and set hasError true
         if(se($c, "desired_quantity","",false) > se($c, "stock","",false)) {
@@ -165,7 +166,8 @@ if (isset($_POST["purchase"])) {
             }
 
             
-            header("Location: orderconfirmation.php");
+            //header("Location: orderconfirmation.php");
+            redirect("orderconfirmation.php");
         } catch (PDOException $e) {
             error_log(var_export($e, true));
             flash("Error ordering item", "danger");
