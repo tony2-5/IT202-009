@@ -16,7 +16,7 @@ if (isset($_POST["submit"])) {
 //get the table definition
 $columns = get_columns($TABLE_NAME);
 //echo "<pre>" . var_export($columns, true) . "</pre>";
-$ignore = ["id", "modified", "created"];
+$ignore = ["id", "modified", "created","averageratings"];
 ?>
 <div class="container-fluid">
     <h1>Add Item</h1>

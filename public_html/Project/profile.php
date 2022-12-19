@@ -79,6 +79,22 @@ try {
     flash("An unexpected error occurred, please try again", "danger");
     //echo "<pre>" . var_export($e->errorInfo, true) . "</pre>";
 }
+
+//select users rating data from table
+$ratings = [];
+$db = getDB();
+// selecting ratings from Ratings table
+$stmt = $db->prepare("SELECT Ratings.rating, Ratings.comment, Ratings.created, Users.username FROM Users JOIN Ratings ON Users.id = Ratings.user_id WHERE Ratings.user_id = :uid ORDER BY Ratings.created DESC LIMIT 10;");
+try {
+    $stmt->execute([":uid" => $user_id]);
+    $ra = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($ra) {
+        $ratings = $ra;
+    }
+} catch (PDOException $e) {
+    error_log(var_export($e, true));
+    flash("Error getting ratings", "danger");
+}
 ?>
 
 <?php
@@ -130,7 +146,29 @@ $username = get_username();
             <a href="?edit">Edit</a>
         <?php endif; ?>
         <?php if ($isVisible || $isMe) : ?>
-            TODO: Define your visible profile
+            <div class="container-fluid d-flex align-items-center flex-column">
+                <table class="table table-striped"> 
+                    <h1> Review History</h1>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Rating</th>
+                            <th>Comments</th>
+                            <th>Review date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($ratings as $rating) : ?>
+                        <tr>
+                            <td><?php se($rating,"username") ?></td>
+                            <td><?php se($rating,"rating") ?></td>
+                            <td><?php se($rating,"comment") ?></td>
+                            <td><?php se($rating,"created") ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         <?php else : ?>
             Profile is private
             <?php
