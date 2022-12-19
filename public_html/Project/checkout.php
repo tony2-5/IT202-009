@@ -130,7 +130,7 @@ if (isset($_POST["purchase"])) {
                 $stmt->bindValue(":up", se($c, "unit_price", 0, false), PDO::PARAM_INT);
                 // executing query
                 try{
-                $stmt->execute();
+                    $stmt->execute();
                 }catch(PDOException $e) {
                     error_log(var_export($e, true));
                     flash("Error inserting into orderitems", "danger");
