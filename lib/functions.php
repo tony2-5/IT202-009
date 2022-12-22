@@ -28,5 +28,11 @@ require(__DIR__ . "/get_columns.php");
 require(__DIR__ . "/save_data.php");
 require(__DIR__ . "/input_map.php");
 require(__DIR__ . "/update_data.php");
+
+//redirect
+require(__DIR__ . "/redirect.php");
+
+//paginate
+require(__DIR__ . "/paginate.php");
 ?>
 

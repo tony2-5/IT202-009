@@ -1,113 +1,112 @@
 <?php
 require(__DIR__ . "/../../partials/nav.php");
 
-$TABLE_NAME = "Products";
-
- // retrieving database info for sort by category
- $catResults = [];
- $db2 = getDB();
- $stmt2 = $db->prepare("SELECT DISTINCT category FROM $TABLE_NAME WHERE stock > 0 AND visibility=1 LIMIT 10");
- try {
-     $stmt2->execute();
-     $r2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-     if ($r2) {
-         $catResults = $r2;
-     }
- } catch (PDOException $e) {
-     error_log(var_export($e, true));
-     flash("Error fetching items", "danger");
- }
-
-//UCID:ajd99
-//12/03/2022
 $results = [];
-// if form submitted for name and category filter alternative select statement
-if (isset($_POST["itemName"])) {
-    $db = getDB();
-    // for sorting
-    if(isset($_POST["sort"]) && $_POST["sort"] === "asc") {
-        // for additive filter, if someone does not want to use category filter
-        if($_POST["category"] === "noFilter") {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
-            WHERE name like :name AND visibility=1 AND stock > 0 ORDER BY unit_price ASC LIMIT 10");
-        } else {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
-            WHERE name like :name AND category like :category AND visibility=1 AND stock > 0 ORDER BY unit_price ASC LIMIT 10");
-        }
-    } else if(isset($_POST["sort"]) && $_POST["sort"] === "desc") {
-        if($_POST["category"] === "noFilter") {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
-            WHERE name like :name AND visibility=1 AND stock > 0 ORDER BY unit_price DESC LIMIT 10");
-        } else {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
-            WHERE name like :name AND category like :category AND visibility=1 AND stock > 0 ORDER BY unit_price DESC LIMIT 10");
-        }
-    }
-    else {
-        if($_POST["category"] === "noFilter") {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
-            WHERE name like :name AND visibility=1 AND stock > 0 LIMIT 10");
-        } else {
-            $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME 
-            WHERE name like :name AND category like :category AND visibility=1 AND stock > 0 LIMIT 10");
-        }
-    }
-    //UCID:ajd99
-    //12/03/2022
-    try {
-        // for additive filter, if someone does not want to use category filter
-        if($_POST["category"] === "noFilter") {
-            $stmt->execute([":name" => "%" . $_POST["itemName"] . "%"]);
-        } else {
-            $stmt->execute([":name" => "%" . $_POST["itemName"] . "%",":category" => $_POST["category"]]);
-        }
-        $r = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if ($r) {
-            $results = $r;
-        }
-    } catch (PDOException $e) {
-        error_log(var_export($e, true));
-        flash("Error fetching records", "danger");
-    }
+//process filters/sorting
+//Sort and Filters
+$col = se($_GET, "col", "unit_price", false);
+//allowed list
+if (!in_array($col, ["unit_price", "stock", "name", "created","averageratings"])) {
+    $col = "unit_price"; //default value, prevent sql injection
 }
-else {
-    // default database info
-    $results = [];
-    $db = getDB();
-    $stmt = $db->prepare("SELECT id, name, description, category, stock, unit_price, visibility FROM $TABLE_NAME WHERE stock > 0 AND visibility=1 LIMIT 10");
-    try {
-        $stmt->execute();
-        $r = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if ($r) {
-            $results = $r;
-        }
-    } catch (PDOException $e) {
-        error_log(var_export($e, true));
-        flash("Error fetching items", "danger");
-    }
+$order = se($_GET, "order", "asc", false);
+//allowed list
+if (!in_array($order, ["asc", "desc"])) {
+    $order = "asc"; //default value, prevent sql injection
 }
+//get name partial search
+$name = se($_GET, "name", "", false);
+
+//split query into data and total
+$base_query = "SELECT id, name, description, unit_price, stock, averageratings FROM Products items";
+$total_query = "SELECT count(1) as total FROM Products items";
+//dynamic query
+$query = " WHERE 1=1 and stock > 0"; //1=1 shortcut to conditionally build AND clauses
+$params = []; //define default params, add keys as needed and pass to execute
+//apply name filter
+if (!empty($name)) {
+    $query .= " AND name like :name";
+    $params[":name"] = "%$name%";
+}
+//apply column and order sort
+if (!empty($col) && !empty($order)) {
+    $query .= " ORDER BY $col $order"; //be sure you trust these values, I validate via the in_array checks above
+}
+
+$per_page = 10;
+paginate($total_query . $query, $params, $per_page);
+
+$query .= " LIMIT :offset, :count";
+$params[":offset"] = $offset;
+$params[":count"] = $per_page;
+//get the records
+$stmt = $db->prepare($base_query . $query); //dynamically generated query
+//we'll want to convert this to use bindValue so ensure they're integers so lets map our array
+foreach ($params as $key => $value) {
+    $type = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+    $stmt->bindValue($key, $value, $type);
+}
+$params = null; //set it to null to avoid issues
+
+try {
+    $stmt->execute($params); //dynamically populated params to bind
+    $r = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($r) {
+        $results = $r;
+    }
+} catch (PDOException $e) {
+    error_log(var_export($e, true));
+    flash("Error fetching items", "danger");
+}
+
 ?>
 
 <div class="container-fluid">
 <?php /* Filter by name*/?>
     <h4 class="mt-2">Filter</h4>
-    <form method="POST" class="row row-cols-lg-auto g-3 align-items-center">
-        <div class="input-group">
-            <input class="form-control" type="search" name="itemName" placeholder="Item Filter" />
-            <?php /* Filter by category*/?>
-            <select class="form-select" name="category" id="category">
-                <option value="noFilter">Select category</option>
-                <?php foreach ($catResults as $item) : ?>
-                    <option value="<?php se($item, "category"); ?>"><?php se($item, "category"); ?></option>
-                <?php endforeach; ?>
-            </select>
-            <?php /* Sort price*/?>
-            <select class="form-select" name="sort" id="sort">
-                <option value="default">Sort price</option>
-                <option value="asc">Ascending Price</option>
-                <option value="desc">Descending Price</option>
-            </select>
-            <input class="btn btn-primary" type="submit" value="Search" />
+    <form class="row row-cols-auto g-3 align-items-center">
+        <div class="col">
+            <div class="input-group" data="i">
+                <div class="input-group-text">Name</div>
+                <input class="form-control" name="name" value="<?php se($name); ?>" />
+            </div>
+        </div>
+        <div class="col">
+            <div class="input-group">
+                <div class="input-group-text">Sort</div>
+                <!-- make sure these match the in_array filter above-->
+                <select class="form-control bg-info" style="width: auto;" name="col" value="<?php se($col); ?>" data="took">
+                    <option value="unit_price">Cost</option>
+                    <option value="stock">Stock</option>
+                    <option value="name">Name</option>
+                    <option value="created">Created</option>
+                    <option value="averageratings">Ratings</option>
+                </select>
+                <script>
+                    //quick fix to ensure proper value is selected since
+                    //value setting only works after the options are defined and php has the value set prior
+                    document.forms[0].col.value = "<?php se($col); ?>";
+                </script>
+                <select class="form-control" style="width: auto;" name="order" value="<?php se($order); ?>">
+                    <option class="bg-white" value="asc">Ascending</option>
+                    <option class="bg-white" value="desc">Descending</option>
+                </select>
+                <script data="this">
+                    //quick fix to ensure proper value is selected since
+                    //value setting only works after the options are defined and php has the value set prior
+                    document.forms[0].order.value = "<?php se($order); ?>";
+                    if (document.forms[0].order.value === "asc") {
+                        document.forms[0].order.className = "form-control bg-success";
+                    } else {
+                        document.forms[0].order.className = "form-control bg-danger";
+                    }
+                </script>
+            </div>
+        </div>
+        <div class="col">
+            <div class="input-group">
+                <input type="submit" class="btn btn-primary" value="Apply" />
+            </div>
         </div>
     </form>
     <?php if (count($results) == 0) : ?>
@@ -123,7 +122,9 @@ else {
                         </div>
                         <div class="card-body">
                             <?php $item["unit_price"]/=100?>
-                            <p class="card-text"> Cost: $<?php se($item, "unit_price"); ?> </p>
+                            <p style="margin:0"> Cost: $<?php se($item, "unit_price"); ?> </p>
+                            <p style="margin:0">Stock: <?php se($item, "stock"); ?> </p>
+                            <p style="margin-bottom:1">Rating: <?php se($item, "averageratings"); ?> </p>
                             <?php /*redirect to product details*/?>
                             <a href="product_details.php?id=<?php se($item, "id"); ?>">Product Details</a>
                             <?php if (has_role("Admin")) : ?>
@@ -142,6 +143,10 @@ else {
                     </div>
                 </div>
             <?php endforeach; ?>
+        </div>
+        <div class="mt-3">
+            <?php /* added pagination */ ?>
+            <?php require(__DIR__ . "/../../partials/pagination.php"); ?>
         </div>
     <?php endif; ?>
 </div>
