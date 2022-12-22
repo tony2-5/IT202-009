@@ -84,7 +84,9 @@ try {
 $ratings = [];
 $db = getDB();
 // selecting ratings from Ratings table
-$stmt = $db->prepare("SELECT Ratings.rating, Ratings.comment, Ratings.created, Users.username FROM Users JOIN Ratings ON Users.id = Ratings.user_id WHERE Ratings.user_id = :uid ORDER BY Ratings.created DESC LIMIT 10;");
+$stmt = $db->prepare("SELECT Ratings.product_id, Ratings.rating, Ratings.comment, Ratings.created, Users.username, Products.name 
+FROM Ratings JOIN Users ON Users.id = Ratings.user_id JOIN Products on Products.id = Ratings.product_id
+WHERE Ratings.user_id = :uid ORDER BY Ratings.created DESC LIMIT 10;");
 try {
     $stmt->execute([":uid" => $user_id]);
     $ra = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -102,8 +104,7 @@ $email = get_user_email();
 $username = get_username();
 ?>
 <div class="container-fluid">
-    <h1>Profile</h1>
-
+    <h1>Profile: <?php se($ratings[0],"username") ?></h1>
     <?php if ($isMe && $isEdit) : ?>
         <?php if ($isMe) : ?>
             <a href="<?php echo get_url("profile.php"); ?>">View</a>
@@ -152,6 +153,7 @@ $username = get_username();
                     <thead>
                         <tr>
                             <th>Username</th>
+                            <th>Product Name</th>
                             <th>Rating</th>
                             <th>Comments</th>
                             <th>Review date</th>
@@ -161,9 +163,11 @@ $username = get_username();
                     <?php foreach ($ratings as $rating) : ?>
                         <tr>
                             <td><?php se($rating,"username") ?></td>
+                            <td><?php se($rating,"name") ?></td>
                             <td><?php se($rating,"rating") ?></td>
                             <td><?php se($rating,"comment") ?></td>
                             <td><?php se($rating,"created") ?></td>
+                            <td><a href="product_details.php?id=<?php se($rating, "product_id"); ?>">Product Details</a><td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
