@@ -2,12 +2,8 @@
 require(__DIR__ . "/../../partials/nav.php");
 $TABLE_NAME = "Products";
 
-
-
-
-
 // insert data into Ratings table after user submits rating
-if(isset($_POST["submitRating"])) {
+if(isset($_POST["submitRating"]) && $_POST["didNotPurchase"]==0) {
     // to prevent user spam refreshing page to submit reviews
     $db = getDB();
     $product_id = se($_GET, "id", -1, false);
@@ -32,6 +28,10 @@ if(isset($_POST["submitRating"])) {
 
     // prevent user from refreshing to submit form again
     redirect("product_details.php?id=".$product_id);
+}
+else if(isset($_POST["submitRating"]) && $_POST["didNotPurchase"]==1) {
+    // if did not purchase is 1 then means user has not purchased product before
+    flash("Must purchase item to leave rating!","warning");
 }
 
 $result = [];
@@ -72,10 +72,31 @@ try {
 
 $ratings = [];
 $db = getDB();
-// selecting ratings from Ratings table
-$stmt = $db->prepare("SELECT Ratings.rating, Ratings.comment, Ratings.created, Ratings.user_id, Users.username FROM Users JOIN Ratings ON Users.id = Ratings.user_id WHERE Ratings.product_id = :pid ORDER BY Ratings.created DESC LIMIT 10;");
+// selecting ratings from Ratings table paginated
+$params = [];
+$per_page = 10;
+// get total Ratings
+$total_query = "SELECT count(1) as total FROM Ratings rating";
+// get actual records
+$query = "SELECT Ratings.rating, Ratings.comment, Ratings.created, Ratings.user_id, Users.username FROM Users JOIN Ratings ON Users.id = Ratings.user_id WHERE Ratings.product_id = :pid ORDER BY Ratings.created DESC";
+paginate($total_query, $params, $per_page);
+
+
+$query .= " LIMIT :offset, :count";
+$params[":pid"] = $product_id;
+$params[":offset"] = $offset;
+$params[":count"] = $per_page;
+//get the records
+$stmt = $db->prepare($query); //dynamically generated query
+//we'll want to convert this to use bindValue so ensure they're integers so lets map our array
+foreach ($params as $key => $value) {
+    $type = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+    $stmt->bindValue($key, $value, $type);
+}
+$params = null; //set it to null to avoid issues
+
 try {
-    $stmt->execute([":pid" => $product_id]);
+    $stmt->execute($params);
     $ra = $stmt->fetchAll(PDO::FETCH_ASSOC);
     if ($ra) {
         $ratings = $ra;
@@ -111,23 +132,25 @@ try {
         <a href="shop.php">Return to shop</a>
 </div>
 <div class="container-fluid">
+<form method="POST">
 <?php /*If this array is empty means user never purchased the item before*/ ?>
-<?php if (count($userPurchased)>0) : ?>
-    <form method="POST">
-        <h1>Leave a rating</h1>
-        <div class="mb-2">
-            <label for="rating">Rate 1-5</label>
-            <input class="form-control" type="number" name="rating" id="rating" min="1" max="5"/>
-        </div>
-        <div>
-            <label for="ratingDescription">Rating Description</label>
-            <textarea class="form-control" name="ratingDescription" id="ratingDescription" rows="4"></textarea>
-        </div>
-        <input type="submit" class="mt-3 btn btn-primary" value="Submit Rating" name="submitRating" />
-    </form>
-<?php else : ?>
-    <h3>Purchase item to leave rating</h3>
-<?php endif; ?>
+    <?php if (count($userPurchased)==0) : ?>
+        <h3>Must purchase item to leave a rating</h3>
+        <input type="hidden" name="didNotPurchase" value="1">
+    <?php else: ?>
+        <h3>Leave a rating</h3>
+        <input type="hidden" name="didNotPurchase" value="0">
+    <?php endif; ?>
+    <div class="mb-2">
+        <label for="rating">Rate 1-5</label>
+        <input class="form-control" type="number" name="rating" id="rating" min="1" max="5"/>
+    </div>
+    <div>
+        <label for="ratingDescription">Rating Description</label>
+        <textarea class="form-control" name="ratingDescription" id="ratingDescription" rows="4"></textarea>
+    </div>
+    <input type="submit" class="mt-3 btn btn-primary" value="Submit Rating" name="submitRating" />
+</form>
 </div>
 <div class="container-fluid d-flex align-items-center flex-column">
     <table class="table table-striped"> 
@@ -156,6 +179,10 @@ try {
         <?php endforeach; ?>
         </tbody>
     </table>
+    <div class="mt-3">
+        <?php /* added pagination */ ?>
+        <?php require(__DIR__ . "/../../partials/pagination.php"); ?>
+    </div>
 </div>
 <?php
 require_once(__DIR__ . "/../../partials/flash.php");
