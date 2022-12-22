@@ -4,7 +4,8 @@ require(__DIR__ . "/../../../partials/nav.php");
 $TABLE_NAME = "Products";
 if (!has_role("Admin")) {
     flash("You don't have permission to view this page", "warning");
-    die(header("Location: $BASE_PATH/home.php"));
+    // die(header("Location: $BASE_PATH/home.php"));
+    redirect("home.php");
 }
 //update the item
 if (isset($_POST["submit"])) {
@@ -17,7 +18,7 @@ if (isset($_POST["submit"])) {
 $result = [];
 $columns = get_columns($TABLE_NAME);
 //echo "<pre>" . var_export($columns, true) . "</pre>";
-$ignore = ["id", "modified", "created"];
+$ignore = ["id", "modified", "created","averageratings"];
 $db = getDB();
 //get the item
 $id = se($_GET, "id", -1, false);

@@ -1,0 +1,2 @@
+ALTER TABLE Products
+MODIFY COLUMN averageratings DECIMAL(2,1)
