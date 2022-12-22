@@ -104,7 +104,11 @@ $email = get_user_email();
 $username = get_username();
 ?>
 <div class="container-fluid">
-    <h1>Profile: <?php se($ratings[0],"username") ?></h1>
+    <?php if(!empty($ratings[0])) :?>
+        <h1>Profile: <?php se($ratings[0],"username") ?></h1>
+    <?php else: ?>
+        <h1>Profile Page</h1>
+    <?php endif;?>
     <?php if ($isMe && $isEdit) : ?>
         <?php if ($isMe) : ?>
             <a href="<?php echo get_url("profile.php"); ?>">View</a>
