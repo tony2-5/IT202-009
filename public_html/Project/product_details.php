@@ -7,8 +7,8 @@ if(isset($_POST["submitRating"]) && $_POST["didNotPurchase"]==0) {
     // to prevent user spam refreshing page to submit reviews
     $db = getDB();
     $product_id = se($_GET, "id", -1, false);
-    $formComment = se($_POST, "ratingDescription","",true);
-    $formRating = se($_POST, "rating",0,true);
+    $formComment = se($_POST, "ratingDescription","",false);
+    $formRating = se($_POST, "rating",0,false);
     $stmt = $db->prepare("INSERT INTO Ratings (product_id, user_id, rating, comment) VALUES (:pid, :uid, :rating, :comment)");
     try{
         $stmt->execute([":pid" => $product_id,":uid" => get_user_id(),":rating" => $formRating,":comment" => $formComment]);
